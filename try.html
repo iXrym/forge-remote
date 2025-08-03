@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forge Remote Control</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&display=swap" rel="stylesheet">
+
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0.5rem;
+      background-color: #0d162b;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+    }
+
+    .remote-container {
+        background-color: #1c263b;
+        border-radius: 2rem;
+        padding: 2rem;
+        width: 100%;
+        max-width: 820px;
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .screen-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .camera-view{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .screen {
+        width: 450px;
+        height: 350px;
+        background-color: #0f172a;
+        border-radius: 0.75rem;
+        border: 2px solid #64748b;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .rec-indicator {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        width: 1rem;
+        height: 1rem;
+        background-color: red;
+        border-radius: 50%;
+        display: none;
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.2); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+
+    .screen-message {
+        position: absolute;
+        bottom: 0.5rem;
+        left: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.8rem;
+        font-weight: bold;
+        display: none;
+    }
+
+    .button-grid{
+        display: grid;
+        grid-template-columns: repeat(3, 50px);
+        grid-template-rows: repeat(2, 50px);
+        gap: 0.5px;
+        justify-items: center;
+        align-items: center;
+    } 
+    .controls-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    }
+
+    .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    }
+
+    .gate-controls {
+      display: grid;
+      grid-template-columns: repeat(2, 60px);
+      gap: 0.6rem;
+      justify-content: center;
+      margin-bottom: 1.2rem; 
+    }
+
+    .arrow-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 40px);
+      gap: 0.3rem;
+    }
+
+    .btn {
+      background-color: #2a3650;
+      color: white;
+      border: none;
+      border-radius: 0.4rem;
+      padding: 0.6rem;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .btn i {
+      font-size: 1rem;
+    }
+
+    .btn.square {
+      width: 60px;
+      height: 60px;
+      padding: 0;
+      font-size: 0.9rem;
+    }
+
+    .btn.large {
+      width: 100%;
+      height: auto;
+      padding: 0.8rem;
+      font-size: 0.9rem;
+    }
+
+    .section-label {
+        font-weight: bold;
+        color: #76a9ff;
+        font-size: 1rem;
+        font-family: 'Rajdhani', sans-serif;
+        margin-bottom: 0.3rem;
+        text-align: center;
+    }
+
+    .divider {
+      width: 100%;
+      border-top: 1px solid #555;
+      margin: 1rem 0;
+    }
+
+    .btn.danger {
+      background-color: rgb(247, 61, 61);
+      color: white;
+    }
+
+    .brand {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 2px;
+    font-size: 1rem;
+    color: #76a9ff;
+    }
+
+    .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    }
+
+    .power-btn {
+    background-color: red;
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    }
+
+    .power-btn.on {
+    background-color: green;
+    }
+
+    .status-text {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    color: #ffffff;
+    }
+
+    .connection-controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    }
+    .connection-controls .btn {
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    background-color: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    }
+    .connection-controls .btn:hover {
+    background-color: #555;
+    }
+
+    .camera-feed {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    }
+
+  </style>
+</head>
+<body>
+ <div class="remote-container">
+
+  <!-- LEFT SIDE -->
+  <div class="left-panel">
+    <div class="section-label">Gate Controls</div>
+    <div class="gate-controls">
+      <button class="btn square"><i class="fas fa-lock"></i></button>
+      <button class="btn square"><i class="fas fa-door-open"></i></button>
+      <button class="btn square"><i class="fas fa-clock"></i></button>
+      <button class="btn square danger"><i class="fas fa-exclamation-triangle"></i></button>
+    </div>
+
+    <div class="section-label">Camera Controls</div>
+    <div class="button-grid">
+      <button id="cameraBtn" class="btn"><i class="fas fa-camera"></i></button>
+      <button class="btn"><i class="fas fa-search-plus"></i></button>
+      <button class="btn"><i class="fas fa-search-minus"></i></button>
+      <button class="btn"><i class="fas fa-moon"></i></button>
+      <button class="btn"><i class="fas fa-backward"></i></button>
+      <button class="btn"><i class="fas fa-forward"></i></button>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="screen-section">
+    <div class="screen">
+      <img src="https://maritanagate.wordpress.com/wp-content/uploads/2017/11/gate-cam.jpg" class="camera-feed" />
+      <div class="rec-indicator" id="recIndicator"></div>
+      <div class="screen-message" id="screenMessage"></div>
+    </div>
+    <div class="brand">FORGE</div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="camera-view">
+
+    <div class="connection-controls">
+      <button id="powerBtn" class="btn"><i class="fas fa-power-off"></i></button>
+      <button class="btn"><i class="fas fa-wifi"></i></button>
+      <button class="btn" title="Link Camera"><i class="fas fa-link"></i></button>
+    </div>
+
+    <div class="controls-row">
+      <button class="btn"><i class="fas fa-angle-left"></i></button>
+      <button class="btn"><i class="fas fa-th-large"></i></button>
+      <button class="btn"><i class="fas fa-angle-right"></i></button>
+    </div>
+
+    <div class="arrow-pad">
+      <div></div>
+      <button id="btnUp" class="btn"><i class="fas fa-chevron-up"></i></button>
+      <div></div>
+      <button id="btnLeft" class="btn"><i class="fas fa-chevron-left"></i></button>
+      <button class="btn"><i class="fas fa-check"></i></button>
+      <button id="btnRight" class="btn"><i class="fas fa-chevron-right"></i></button>
+      <div></div>
+      <button id="btnDown" class="btn"><i class="fas fa-chevron-down"></i></button>
+      <div></div>
+    </div>
+  </div>
+
+</div>
+
+
+    <script>
+    const cameraBtn = document.getElementById('cameraBtn');
+    const recIndicator = document.getElementById('recIndicator');
+    const screenMessage = document.getElementById('screenMessage');
+    const powerBtn = document.getElementById("powerBtn");
+    const statusText = document.getElementById("statusText");
+    const controls = document.querySelectorAll(".gate-controls button, .button-grid button");
+
+    let isOn = true;
+    let isRecording = false;
+    let longPressed = false;
+    let pressTimer;
+
+    powerBtn.addEventListener("click", () => {
+        isOn = !isOn;
+
+        if (isOn) {
+        statusText.textContent = "System: ON";
+        powerBtn.classList.add("on");
+        controls.forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            btn.style.pointerEvents = "auto";
+        });
+        } else {
+        statusText.textContent = "System: OFF";
+        powerBtn.classList.remove("on");
+        controls.forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            btn.style.pointerEvents = "none";
+        });
+        }
+    });
+
+    cameraBtn.addEventListener('mousedown', () => {
+        pressTimer = setTimeout(() => {
+        // Long press: toggle recording on
+        if (!isRecording) {
+            isRecording = true;
+            longPressed = true;
+            recIndicator.style.display = 'block';
+            screenMessage.innerText = 'Recording...';
+            screenMessage.style.display = 'block';
+        }
+        }, 500); // 500ms long press threshold
+    });
+
+    cameraBtn.addEventListener('mouseup', () => {
+        clearTimeout(pressTimer);
+
+        if (longPressed) {
+        longPressed = false;
+        return;
+        }
+
+        if (isRecording) {
+        isRecording = false;
+        recIndicator.style.display = 'none';
+        screenMessage.innerText = 'Recording Stopped';
+        screenMessage.style.display = 'block';
+        setTimeout(() => screenMessage.style.display = 'none', 1500);
+        } else {
+        screenMessage.innerText = 'Snapshot Taken';
+        screenMessage.style.display = 'block';
+        setTimeout(() => screenMessage.style.display = 'none', 1500);
+        }
+    });
+
+    cameraBtn.addEventListener('mouseleave', () => {
+        clearTimeout(pressTimer);
+    });
+
+    // D-Pad actions
+    function showScreenMessage(text) {
+        screenMessage.innerText = text;
+        screenMessage.style.display = 'block';
+        setTimeout(() => {
+        if (!isRecording) screenMessage.style.display = 'none';
+        }, 1000);
+    }
+
+    document.getElementById('btnLeft').addEventListener('click', () => showScreenMessage('Panning Left'));
+    document.getElementById('btnRight').addEventListener('click', () => showScreenMessage('Panning Right'));
+    document.getElementById('btnUp').addEventListener('click', () => showScreenMessage('Panning Up'));
+    document.getElementById('btnDown').addEventListener('click', () => showScreenMessage('Panning Down'));
+    </script>
+</body>
+</html>
