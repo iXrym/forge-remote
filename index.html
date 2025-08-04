@@ -224,30 +224,27 @@ object-fit: cover;
 border-radius: 10px;
 }
 .grid-feed {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 4px;
-  width: 100%;
-  height: 100%;
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 4px;
+width: 100%;
+height: 100%;
 }
-
 .grid-feed img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 6px;
+width: 100%;
+height: 100%;
+object-fit: cover;
+border-radius: 6px;
 }
-
 .single-feed {
-  width: 100%;
-  height: 100%;
+width: 100%;
+height: 100%;
 }
-
 .single-feed img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
+width: 100%;
+height: 100%;
+object-fit: cover;
+border-radius: 10px;
 }
 </style>
 </head>
@@ -264,8 +261,8 @@ border-radius: 10px;
 <div class="section-label">Camera Controls</div>
 <div class="button-grid">
 <button id="cameraBtn" class="btn"><i class="fas fa-camera"></i></button>
-<button class="btn"><i class="fas fa-search-plus"></i></button>
-<button class="btn"><i class="fas fa-search-minus"></i></button>
+<button id="zoomInBtn" class="btn"><i class="fas fa-search-plus"></i></button>
+<button id="zoomOutBtn" class="btn"><i class="fas fa-search-minus"></i></button>
 <button class="btn"><i class="fas fa-moon"></i></button>
 <button class="btn"><i class="fas fa-backward"></i></button>
 <button class="btn"><i class="fas fa-forward"></i></button>
@@ -324,11 +321,17 @@ const singleFeed = document.getElementById('singleFeed');
 const gridFeed = document.getElementById('gridFeed');
 const emergencyBtn = document.getElementById('emergencyBtn');
 const emergencyAudio = document.getElementById('emergencyAudio');
+const zoomInBtn = document.getElementById('zoomInBtn');
+const zoomOutBtn = document.getElementById('zoomOutBtn');
+const singleFeedImg = document.querySelector('#singleFeed img');
+
 let isGridView = false;
 let isOn = true;
 let isRecording = false;
 let longPressed = false;
 let pressTimer;
+let currentZoom = 1;
+
 gridViewBtn.addEventListener('click', () => {
 isGridView = !isGridView;
 if (isGridView) {
@@ -402,15 +405,37 @@ setTimeout(() => {
 if (!isRecording) screenMessage.style.display = 'none';
 }, 1000);
 }
+
+// Zoom functionality
+zoomInBtn.addEventListener('click', () => {
+currentZoom += 0.1;
+singleFeedImg.style.transform = `scale(${currentZoom})`;
+showScreenMessage('Zooming In');
+});
+zoomOutBtn.addEventListener('click', () => {
+if (currentZoom > 1) {
+currentZoom -= 0.1;
+singleFeedImg.style.transform = `scale(${currentZoom})`;
+showScreenMessage('Zooming Out');
+} else {
+showScreenMessage('Cannot Zoom Out Further');
+}
+});
 document.getElementById('btnLeft').addEventListener('click', () => showScreenMessage('Panning Left'));
 document.getElementById('btnRight').addEventListener('click', () => showScreenMessage('Panning Right'));
 document.getElementById('btnUp').addEventListener('click', () => showScreenMessage('Panning Up'));
 document.getElementById('btnDown').addEventListener('click', () => showScreenMessage('Panning Down'));
+
+// Emergency button click listener to play/stop the audio
 emergencyBtn.addEventListener('click', () => {
-emergencyAudio.pause();
-emergencyAudio.currentTime = 0;
+if (emergencyAudio.paused) {
 emergencyAudio.play();
 showScreenMessage('EMERGENCY! ALARM ACTIVATED');
+} else {
+emergencyAudio.pause();
+emergencyAudio.currentTime = 0;
+showScreenMessage('EMERGENCY ALARM DEACTIVATED');
+}
 });
 </script>
 </body>
